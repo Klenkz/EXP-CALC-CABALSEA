@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CABAL SEA Fixed Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #581c87 50%, #0f172a 100%);
+            min-height: 100vh;
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 56rem;
+            margin: 0 auto;
+            padding-top: 2rem;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 0.75rem;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .card-header {
+            text-align: center;
+            padding: 2rem 2rem 1rem;
+        }
+
+        .title-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .calculator-icon {
+            width: 2rem;
+            height: 2rem;
+            color: #c084fc;
+        }
+
+        .title {
+            font-size: 1.875rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .description {
+            color: #e9d5ff;
+            margin-top: 0.5rem;
+        }
+
+        .card-content {
+            padding: 0 2rem 2rem;
+        }
+
+        .fix-info {
+            background: linear-gradient(90deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .fix-info-title {
+            color: #4ade80;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .fix-info-text {
+            color: #bbf7d0;
+            font-size: 0.875rem;
+        }
+
+        .input-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .label {
+            display: block;
+            color: white;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .label-hint {
+            color: #d8b4fe;
+            font-size: 0.75rem;
+            font-weight: normal;
+        }
+
+        .input {
+            width: 100%;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 0.375rem;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .input::placeholder {
+            color: #d8b4fe;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2);
+        }
+
+        .button {
+            padding: 0.75rem 1.5rem;
+            background: #9333ea;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .button:hover {
+            background: #7c3aed;
+        }
+
+        .error {
+            color: #f87171;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .result-card {
+            background: linear-gradient(90deg, rgba(147, 51, 234, 0.2), rgba(37, 99, 235, 0.2));
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .result-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #e9d5ff;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-description {
+            color: #d8b4fe;
+            font-size: 0.875rem;
+        }
+
+        .process-card {
+            background: linear-gradient(90deg, rgba(251, 191, 36, 0.2), rgba(245, 158, 11, 0.2));
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .process-card .result-title {
+            color: #fef3c7;
+        }
+
+        .process-card .result-number {
+            color: #fbbf24;
+            font-size: 1.25rem;
+        }
+
+        .final-card {
+            background: linear-gradient(90deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.2));
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .final-card .result-title {
+            color: #bbf7d0;
+        }
+
+        .final-card .result-number {
+            color: #4ade80;
+            font-size: 2.5rem;
+        }
+
+        .breakdown {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .breakdown-title {
+            color: #c084fc;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .breakdown-item {
+            color: #e9d5ff;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .step-item {
+            background: rgba(168, 85, 247, 0.1);
+            border-left: 3px solid #a855f7;
+            padding: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0 0.25rem 0.25rem 0;
+        }
+
+        .info-section {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .info-title {
+            color: white;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-list {
+            list-style: none;
+            color: #e9d5ff;
+            font-size: 0.875rem;
+        }
+
+        .info-list li {
+            margin-bottom: 0.25rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <div class="title-container">
+                    <svg class="calculator-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                        <line x1="9" y1="9" x2="10" y2="9"></line>
+                        <line x1="14" y1="9" x2="15" y2="9"></line>
+                        <line x1="9" y1="13" x2="10" y2="13"></line>
+                        <line x1="14" y1="13" x2="15" y2="13"></line>
+                    </svg>
+                    <h1 class="title">CABAL SEA Fixed Calculator</h1>
+                </div>
+                <p class="description">Now supports decimal levels for precise EXP calculations!</p>
+            </div>
+            
+            <div class="card-content">
+                <div class="fix-info">
+                    <div class="fix-info-title">🎯 NEW: Decimal Level Support!</div>
+                    <div class="fix-info-text">
+                        Use decimals for partial progress: 169.5 = Level 169 + 50% toward Level 170
+                    </div>
+                </div>
+
+                <div class="input-section">
+                    <div class="two-column">
+                        <div class="input-group">
+                            <label for="current-level" class="label">
+                                Current Level 
+                                <span class="label-hint">(decimals supported: 169.5 = 50% progress)</span>
+                            </label>
+                            <input 
+                                type="number" 
+                                id="current-level" 
+                                class="input" 
+                                min="103" 
+                                max="179" 
+                                step="0.1"
+                                placeholder="169.5"
+                                value="130"
+                            >
+                        </div>
+                        <div class="input-group">
+                            <label for="starting-quest" class="label">Starting Quest Level</label>
+                            <input 
+                                type="number" 
+                                id="starting-quest" 
+                                class="input" 
+                                min="103" 
+                                max="179" 
+                                placeholder="First quest to do"
+                                value="103"
+                            >
+                        </div>
+                    </div>
+                    <button class="button" onclick="calculateFixed()">Calculate Final Level</button>
+                    <div id="error" class="error hidden"></div>
+                </div>
+
+                <div id="process-result" class="result-card process-card hidden">
+                    <h3 class="result-title">🔄 Iterative Process</h3>
+                    <div class="result-number">Step-by-Step Convergence</div>
+                    <div class="breakdown">
+                        <div class="breakdown-title">Convergence Steps:</div>
+                        <div id="process-breakdown"></div>
+                    </div>
+                </div>
+
+                <div id="final-result" class="result-card final-card hidden">
+                    <h3 class="result-title">🎯 Final Result</h3>
+                    <div class="result-number">Level <span id="final-level"></span></div>
+                    <p class="result-description">Your final level after all scenario quests with iterative convergence</p>
+                </div>
+
+                <div class="info-section">
+                    <h4 class="info-title">How It Works (FIXED):</h4>
+                    <ul class="info-list">
+                        <li>• <strong>Decimal Levels:</strong> 169.5 = Level 169 + 50% progress toward Level 170</li>
+                        <li>• <strong>Step 1:</strong> Current level + scenario quests (starting → current) → New level</li>
+                        <li>• <strong>Step 2:</strong> Add quests (old current + 1 → new current) → Newer level</li>
+                        <li>• <strong>Step 3:</strong> Add quests (previous current + 1 → newer current) → Even newer level</li>
+                        <li>• <strong>Repeat:</strong> Until convergence (no more level gains)</li>
+                        <li>• Uses 1.6x SEA multiplier for accurate predictions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base KR EXP data
+        const baseExpData = {
+            2: 270, 3: 1080, 4: 2430, 5: 4320, 6: 6750, 7: 9720, 8: 13230, 9: 17280, 10: 21870,
+            11: 27000, 12: 32670, 13: 38880, 14: 45630, 15: 52920, 16: 60750, 17: 69120, 18: 78030,
+            19: 87480, 20: 96228, 21: 105755, 22: 116119, 23: 127382, 24: 139611, 25: 152874,
+            26: 167244, 27: 182798, 28: 199615, 29: 217780, 30: 237598, 31: 259219, 32: 282808,
+            33: 308544, 34: 336621, 35: 367254, 36: 400674, 37: 437135, 38: 476914, 39: 520314,
+            40: 567662, 41: 619319, 42: 675677, 43: 737164, 44: 804246, 45: 877432, 46: 957279,
+            47: 1044391, 48: 1139431, 49: 1243119, 50: 1356027, 51: 1459379, 52: 1570292,
+            53: 1681783, 54: 1792781, 55: 1902140, 56: 2008660, 57: 2111102, 58: 2208212,
+            59: 2298749, 60: 2392998, 61: 2491111, 62: 2593246, 63: 2699569, 64: 2810252,
+            65: 2925472, 66: 3045416, 67: 3170278, 68: 3300260, 69: 3435571, 70: 3576429,
+            71: 3723063, 72: 3875708, 73: 4034612, 74: 4200031, 75: 4372232, 76: 4551494,
+            77: 4738105, 78: 4932368, 79: 5134595, 80: 5345113, 81: 5564263, 82: 5792397,
+            83: 6029886, 84: 6277111, 85: 6534473, 86: 6802386, 87: 7081284, 88: 7371616,
+            89: 7673853, 90: 7988481, 91: 8316008, 92: 8656965, 93: 9011900, 94: 9381388,
+            95: 9766025, 96: 10166432, 97: 10583256, 98: 11017169, 99: 11468873, 100: 11948674,
+            101: 12458524, 102: 13000532, 103: 13576959, 104: 14190315, 105: 14843211,
+            106: 15538562, 107: 16279419, 108: 17069135, 109: 17911581, 110: 18810474,
+            111: 19770184, 112: 20795367, 113: 21891075, 114: 23062795, 115: 24316488,
+            116: 25658637, 117: 27096290, 118: 28637121, 119: 30289483, 120: 32062478,
+            121: 33966027, 122: 36010952, 123: 38209060, 124: 40573246, 125: 43117594,
+            126: 45857501, 127: 48809807, 128: 51992939, 129: 55427073, 130: 59134312,
+            131: 63138888, 132: 67467374, 133: 72148936, 134: 77215595, 135: 82702535,
+            136: 88648433, 137: 95095834, 138: 102091559, 139: 109687171, 140: 117939485,
+            141: 126911142, 142: 136671243, 143: 147296066, 144: 158869854, 145: 171485709,
+            146: 185246580, 147: 200266373, 148: 216671193, 149: 234600734, 150: 254209836,
+            151: 275670231, 152: 299172496, 153: 324928236, 154: 353177645, 155: 384167076,
+            156: 418202538, 157: 455602195, 158: 496777127, 159: 541978969, 160: 591805805,
+            161: 646707630, 162: 707242697, 163: 774034698, 164: 847780854, 165: 929261071,
+            166: 1019348286, 167: 1119020161, 168: 1229372335, 169: 1351633413, 170: 1487181970,
+            171: 1637565811, 172: 1804523833, 173: 1990010838, 174: 2196225711, 175: 2425643449,
+            176: 2681051576, 177: 2965591579, 178: 3282806083, 179: 3636692578, 180: 4031764677,
+            181: 4473121956, 182: 4966529673, 183: 5518509781, 184: 6136444914, 185: 6828697264,
+            186: 7604744565, 187: 8475335723, 188: 9452669062, 189: 10550596573, 190: 11784858113,
+            191: 13173350096
+        };
+
+        // CABAL SEA Scenario Quest EXP (confirmed accurate)
+        const seaScenarioQuestExp = {
+            103: 13764000, 104: 14397000, 105: 15072000, 106: 15791000, 107: 16557000,
+            108: 17374000, 109: 18246000, 110: 19117000, 111: 20171000, 112: 21234000,
+            113: 22370000, 114: 23586000, 115: 24888000, 116: 26283000, 117: 27778000,
+            118: 14690000, 119: 31100000, 120: 32947000, 121: 34930000, 122: 37062000,
+            123: 39365000, 124: 41824000, 125: 44481000, 126: 47345000, 127: 50433000,
+            128: 53764000, 129: 57360000, 130: 61244000, 131: 65443000, 132: 69984000,
+            133: 74889000, 134: 80221000, 135: 85998000, 136: 92242000, 137: 99028000,
+            138: 106396000, 139: 114401000, 140: 123103000, 141: 132571000, 142: 142877000,
+            143: 154103000, 144: 166341000, 145: 179689000, 146: 194258000, 147: 210171000,
+            148: 227562000, 149: 246583000, 150: 267390000, 151: 290197000, 152: 315180000,
+            153: 342577000, 154: 372642000, 155: 405656000, 156: 441934000, 157: 481825000,
+            158: 525719000, 159: 574051000, 160: 627306000, 161: 686025000, 162: 750813000,
+            163: 822347000, 164: 901383000, 165: 988767000, 166: 1085449000, 167: 1192491000,
+            168: 1311084000, 169: 1442566000, 170: 1588438000, 171: 1750388000, 172: 1930310000,
+            173: 2130338000, 174: 2352874000, 175: 2600620000, 176: 2876623000, 177: 3184321000,
+            178: 3527591000, 179: 3910811000
+        };
+
+        // SEA EXP data with 1.6x multiplier for more accurate predictions
+        const SEA_MULTIPLIER = 1.6;
+        const seaExpData = {};
+
+        // Initialize SEA EXP data with multiplier
+        for (let level in baseExpData) {
+            seaExpData[level] = Math.round(baseExpData[level] * SEA_MULTIPLIER);
+        }
+
+        function getTotalExpToLevel(level) {
+            if (level <= 1) return 0;
+            
+            const wholeLevel = Math.floor(level);
+            const decimalPart = level - wholeLevel;
+            
+            // Calculate EXP to whole level
+            let total = 0;
+            for (let i = 2; i <= wholeLevel; i++) {
+                total += seaExpData[i] || 0;
+            }
+            
+            // Add partial EXP for decimal part
+            if (decimalPart > 0 && wholeLevel < 191) {
+                const nextLevelExp = seaExpData[wholeLevel + 1] || 0;
+                total += Math.round(nextLevelExp * decimalPart);
+            }
+            
+            return total;
+        }
+
+        function findLevelFromTotalExp(totalExp) {
+            let currentExp = 0;
+            for (let level = 1; level <= 191; level++) {
+                const nextLevelExp = seaExpData[level + 1] || 0;
+                if (currentExp + nextLevelExp > totalExp) {
+                    // Calculate decimal part
+                    const remainingExp = totalExp - currentExp;
+                    const decimalPart = nextLevelExp > 0 ? remainingExp / nextLevelExp : 0;
+                    return Math.round((level + Math.max(0, Math.min(1, decimalPart))) * 10) / 10;
+                }
+                currentExp += nextLevelExp;
+            }
+            return 191;
+        }
+
+        function calculateQuestExpInRange(startLevel, endLevel) {
+            let totalExp = 0;
+            let questDetails = [];
+            const startWhole = Math.floor(startLevel);
+            const endWhole = Math.floor(endLevel);
+            
+            for (let level = startWhole; level <= endWhole; level++) {
+                if (seaScenarioQuestExp[level]) {
+                    totalExp += seaScenarioQuestExp[level];
+                    questDetails.push(`Quest ${level}: ${seaScenarioQuestExp[level].toLocaleString()}`);
+                }
+            }
+            return { totalExp, questDetails };
+        }
+
+        function calculateFixed() {
+            const originalCurrentLevel = parseFloat(document.getElementById('current-level').value);
+            const startingQuest = parseInt(document.getElementById('starting-quest').value);
+            const errorDiv = document.getElementById('error');
+
+            // Clear previous results
+            document.getElementById('process-result').classList.add('hidden');
+            document.getElementById('final-result').classList.add('hidden');
+            errorDiv.classList.add('hidden');
+
+            // Validation
+            if (isNaN(originalCurrentLevel) || originalCurrentLevel < 103 || originalCurrentLevel > 179) {
+                errorDiv.textContent = 'Please enter a valid current level between 103 and 179';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (isNaN(startingQuest) || startingQuest < 103 || startingQuest > 179) {
+                errorDiv.textContent = 'Please enter a valid starting quest level between 103 and 179';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            if (startingQuest > Math.floor(originalCurrentLevel)) {
+                errorDiv.textContent = 'Starting quest level cannot be higher than current level';
+                errorDiv.classList.remove('hidden');
+                return;
+            }
+
+            // FIXED ITERATIVE ALGORITHM
+            let processSteps = [];
+            let currentLevel = originalCurrentLevel;
+            let totalExp = getTotalExpToLevel(currentLevel);
+            
+            processSteps.push(`<div class="step-item"><strong>🎯 Starting Point</strong><br>Current Level: ${currentLevel}<br>Base EXP: ${totalExp.toLocaleString()}</div>`);
+
+            // Step 1: Add scenario quests from starting quest to current level
+            const step1Result = calculateQuestExpInRange(startingQuest, currentLevel);
+            totalExp += step1Result.totalExp;
+            const newLevel = findLevelFromTotalExp(totalExp);
+            
+            processSteps.push(`<div class="step-item"><strong>📋 Step 1: Initial Quest Batch</strong><br>Quests ${startingQuest}-${Math.floor(currentLevel)}: ${step1Result.totalExp.toLocaleString()} EXP<br>Level: ${currentLevel} → <strong>${newLevel}</strong></div>`);
+
+            let oldLevel = currentLevel;
+            currentLevel = newLevel;
+            let stepNumber = 2;
+            let maxIterations = 20; // Safety limit
+            let iterations = 0;
+
+            // FIXED: Properly check if we need to do gap filling
+            while (iterations < maxIterations) {
+                // Check if we gained levels
+                if (currentLevel <= oldLevel + 0.1) { // Small tolerance for decimal precision
+                    // No significant level gain, we're done
+                    break;
+                }
+
+                // Add quests from (oldLevel + 1) to currentLevel
+                const gapStartLevel = Math.floor(oldLevel) + 1;
+                const gapEndLevel = Math.min(Math.floor(currentLevel), 179); // Cap at 179
+                
+                if (gapStartLevel > gapEndLevel) {
+                    // No gap to fill
+                    break;
+                }
+
+                const gapResult = calculateQuestExpInRange(gapStartLevel, gapEndLevel);
+                
+                // Only proceed if we have quests to add
+                if (gapResult.totalExp > 0) {
+                    totalExp += gapResult.totalExp;
+                    const newLevelAfterGap = findLevelFromTotalExp(totalExp);
+
+                    processSteps.push(`<div class="step-item"><strong>🔄 Step ${stepNumber}: Gap Fill</strong><br>Gap Quests ${gapStartLevel}-${gapEndLevel}: ${gapResult.totalExp.toLocaleString()} EXP<br>Level: ${currentLevel} → <strong>${newLevelAfterGap}</strong></div>`);
+
+                    oldLevel = currentLevel;
+                    currentLevel = newLevelAfterGap;
+                    stepNumber++;
+                    iterations++;
+                } else {
+                    // No quests to add
+                    break;
+                }
+            }
+
+            const finalLevel = findLevelFromTotalExp(totalExp);
+
+            processSteps.push(`<div class="step-item"><strong>🎯 CONVERGENCE REACHED!</strong><br>Final Level: <strong>${finalLevel}</strong><br>Total EXP: ${totalExp.toLocaleString()}<br>Iterations: ${iterations}</div>`);
+
+            // Display results
+            document.getElementById('process-breakdown').innerHTML = processSteps.join('');
+            document.getElementById('process-result').classList.remove('hidden');
+
+            document.getElementById('final-level').textContent = finalLevel;
+            document.getElementById('final-result').classList.remove('hidden');
+        }
+
+        // Auto-calculate on page load
+        window.onload = function() {
+            calculateFixed();
+        };
+
+        // Allow Enter key to calculate
+        ['current-level', 'starting-quest'].forEach(id => {
+            document.getElementById(id).addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    calculateFixed();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
