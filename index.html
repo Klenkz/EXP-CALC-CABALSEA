@@ -516,14 +516,14 @@
             let currentLevel = originalCurrentLevel;
             let totalExp = getTotalExpToLevel(currentLevel);
             
-            processSteps.push(`<div class="step-item"><strong>🎯 Starting Point</strong><br>Current Level: ${currentLevel}<br>Base EXP: ${totalExp.toLocaleString()}</div>`);
+            processSteps.push(`<div class="step-item"><strong style="color:#67e8f9;">🎯 Starting Point</strong><br>Current Level: ${currentLevel}<br>Base EXP: ${totalExp.toLocaleString()}</div>`);
 
             // Step 1: Add scenario quests from starting quest to current level
             const step1Result = calculateQuestExpInRange(startingQuest, currentLevel);
             totalExp += step1Result.totalExp;
             const newLevel = findLevelFromTotalExp(totalExp);
             
-            processSteps.push(`<div class="step-item"><strong>📋 Step 1: Initial Quest Batch</strong><br>Quests ${startingQuest}-${Math.floor(currentLevel)}: ${step1Result.totalExp.toLocaleString()} EXP<br>Level: ${currentLevel} → <strong>${newLevel}</strong></div>`);
+            processSteps.push(`<div class="step-item"><strong style="color:#c4b5fd;">📋 Step 1: Initial Quest Batch</strong><br>Quests ${startingQuest}-${Math.floor(originalCurrentLevel)}: ${step1Result.totalExp.toLocaleString()} EXP<br>Level: ${originalCurrentLevel} → <strong>${newLevel}</strong></div>`);
 
             let oldLevel = currentLevel;
             currentLevel = newLevel;
@@ -555,7 +555,7 @@
                     totalExp += gapResult.totalExp;
                     const newLevelAfterGap = findLevelFromTotalExp(totalExp);
 
-                    processSteps.push(`<div class="step-item"><strong>🔄 Step ${stepNumber}: Gap Fill</strong><br>Gap Quests ${gapStartLevel}-${gapEndLevel}: ${gapResult.totalExp.toLocaleString()} EXP<br>Level: ${currentLevel} → <strong>${newLevelAfterGap}</strong></div>`);
+                    processSteps.push(`<div class="step-item"><strong style="color:#fbbf24;">🔄 Step ${stepNumber}: Gap Fill</strong><br>Gap Quests ${gapStartLevel}-${gapEndLevel}: ${gapResult.totalExp.toLocaleString()} EXP<br>Level: ${currentLevel} → <strong>${newLevelAfterGap}</strong></div>`);
 
                     oldLevel = currentLevel;
                     currentLevel = newLevelAfterGap;
@@ -569,7 +569,7 @@
 
             const finalLevel = findLevelFromTotalExp(totalExp);
 
-            processSteps.push(`<div class="step-item"><strong>🎯 CONVERGENCE REACHED!</strong><br>Final Level: <strong>${finalLevel}</strong><br>Total EXP: ${totalExp.toLocaleString()}<br>Iterations: ${iterations}</div>`);
+            processSteps.push(`<div class="step-item"><strong style="color:#4ade80;">🎯 CONVERGENCE REACHED!</strong><br>Final Level: <strong>${finalLevel}</strong><br>Total EXP: ${totalExp.toLocaleString()}<br>Iterations: ${iterations}</div>`);
 
             // Display results
             document.getElementById('process-breakdown').innerHTML = processSteps.join('');
