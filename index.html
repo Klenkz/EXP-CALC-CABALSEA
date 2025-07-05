@@ -311,21 +311,21 @@
                                 id="current-level" 
                                 class="input" 
                                 min="103" 
-                                max="179" 
+                                max="189" 
                                 step="0.1"
                                 placeholder="169.5"
                                 value=""
                             >
                         </div>
                         <div class="input-group">
-                            <label for="starting-quest" class="label">Starting Quest Level</label>
+                            <label for="starting-quest" class="label">Available Starting Quest Level</label>
                             <input 
                                 type="number" 
                                 id="starting-quest" 
                                 class="input" 
                                 min="103" 
-                                max="179" 
-                                placeholder="First quest to do"
+                                max="189" 
+                                placeholder="Available starting quest"
                                 value=""
                             >
                         </div>
@@ -360,7 +360,7 @@
                         <li>• <strong>Step 2:</strong> Add quests (old current + 1 → new current) → Newer level</li>
                         <li>• <strong>Step 3:</strong> Add quests (previous current + 1 → newer current) → Even newer level</li>
                         <li>• <strong>Repeat:</strong> Until convergence (no more level gains)</li>
-                        <li>• Uses 1.6x SEA multiplier for accurate predictions</li>
+                        <li>• Uses 1.5x SEA multiplier for accurate predictions</li>
                     </ul>
                 </div>
             </div>
@@ -403,7 +403,16 @@
             176: 2681051576, 177: 2965591579, 178: 3282806083, 179: 3636692578, 180: 4031764677,
             181: 4473121956, 182: 4966529673, 183: 5518509781, 184: 6136444914, 185: 6828697264,
             186: 7604744565, 187: 8475335723, 188: 9452669062, 189: 10550596573, 190: 11784858113,
-            191: 13173350096
+            191: 13173350096,
+            192: 14885885608,
+            193: 17118768450,
+            194: 20028959868,
+            195: 23834461313,
+            196: 28839698188,
+            197: 35184313790,
+            198: 43276851011,
+            199: 53663295366,
+            200: 67079119207
         };
 
         // CABAL SEA Scenario Quest EXP (confirmed accurate)
@@ -423,11 +432,23 @@
             163: 822347000, 164: 901383000, 165: 988767000, 166: 1085449000, 167: 1192491000,
             168: 1311084000, 169: 1442566000, 170: 1588438000, 171: 1750388000, 172: 1930310000,
             173: 2130338000, 174: 2352874000, 175: 2600620000, 176: 2876623000, 177: 3184321000,
-            178: 3527591000, 179: 3910811000
+            178: 3527591000, 179: 3910811000,
+            180: 3578497564,
+            181: 3973223738,
+            182: 4414807824,
+            183: 4909155931,
+            184: 5462957811,
+            '184.2': 5462957811,
+            185: 6083795652,
+            '185.2': 6083795652,
+            186: 6780268578,
+            187: 7562135249,
+            188: 8440477258,
+            189: 8440477258
         };
 
-        // SEA EXP data with 1.6x multiplier for more accurate predictions
-        const SEA_MULTIPLIER = 1.6;
+        // SEA EXP data with 1.5x multiplier for more accurate predictions
+        const SEA_MULTIPLIER = 1.5;
         const seaExpData = {};
 
         // Initialize SEA EXP data with multiplier
@@ -482,6 +503,11 @@
                     totalExp += seaScenarioQuestExp[level];
                     questDetails.push(`Quest ${level}: ${seaScenarioQuestExp[level].toLocaleString()}`);
                 }
+                // Automatically include part 2 quests for 184 and 185
+                if ((level === 184 || level === 185) && seaScenarioQuestExp[`${level}.2`]) {
+                    totalExp += seaScenarioQuestExp[`${level}.2`];
+                    questDetails.push(`Quest ${level} (Part 2): ${seaScenarioQuestExp[`${level}.2`].toLocaleString()}`);
+                }
             }
             return { totalExp, questDetails };
         }
@@ -497,14 +523,14 @@
             errorDiv.classList.add('hidden');
 
             // Validation
-            if (isNaN(originalCurrentLevel) || originalCurrentLevel < 103 || originalCurrentLevel > 179) {
-                errorDiv.textContent = 'Please enter a valid current level between 103 and 179';
+            if (isNaN(originalCurrentLevel) || originalCurrentLevel < 103 || originalCurrentLevel > 189) {
+                errorDiv.textContent = 'Please enter a valid current level between 103 and 189';
                 errorDiv.classList.remove('hidden');
                 return;
             }
 
-            if (isNaN(startingQuest) || startingQuest < 103 || startingQuest > 179) {
-                errorDiv.textContent = 'Please enter a valid starting quest level between 103 and 179';
+            if (isNaN(startingQuest) || startingQuest < 103 || startingQuest > 189) {
+                errorDiv.textContent = 'Please enter a valid available starting quest level between 103 and 189';
                 errorDiv.classList.remove('hidden');
                 return;
             }
@@ -522,8 +548,11 @@
             
             processSteps.push(`<div class="step-item"><strong style="color:#67e8f9;">🎯 Starting Point</strong><br>Current Level: ${currentLevel}<br>Base EXP: ${totalExp.toLocaleString()}</div>`);
 
+            // Find the highest quest level available
+            const maxQuestLevel = Math.max(...Object.keys(seaScenarioQuestExp).map(l => parseInt(l)));
+
             // Step 1: Add scenario quests from starting quest to current level
-            const step1Result = calculateQuestExpInRange(startingQuest, currentLevel);
+            const step1Result = calculateQuestExpInRange(startingQuest, Math.min(currentLevel, maxQuestLevel));
             totalExp += step1Result.totalExp;
             const newLevel = findLevelFromTotalExp(totalExp);
             
@@ -543,9 +572,9 @@
                     break;
                 }
 
-                // Add quests from (oldLevel + 1) to currentLevel
+                // Add quests from (oldLevel + 1) to currentLevel, but never above maxQuestLevel
                 const gapStartLevel = Math.floor(oldLevel) + 1;
-                const gapEndLevel = Math.min(Math.floor(currentLevel), 179); // Cap at 179
+                const gapEndLevel = Math.min(Math.floor(currentLevel), maxQuestLevel); // Cap at max available quest
                 
                 if (gapStartLevel > gapEndLevel) {
                     // No gap to fill
